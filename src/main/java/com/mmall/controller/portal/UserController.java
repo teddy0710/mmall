@@ -27,4 +27,26 @@ public class UserController {
         }
         return serverResponse;
     }
+
+
+    @RequestMapping(value = "logout.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> logout(HttpSession session) {
+        session.removeAttribute(Const.CURRENT_USER);
+        return ServerResponse.createBySuccess();
+    }
+
+
+    @RequestMapping(value = "register.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> register(User user) {
+        return userService.register(user);
+    }
+
+
+    @RequestMapping(value = "check_valid.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> checkValid(String str, String type) {
+        return userService.checkValid(str, type);
+    }
 }
