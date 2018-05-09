@@ -1,6 +1,7 @@
 package com.mmall.controller.portal;
 
 import com.mmall.common.Const;
+import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IUserService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -49,4 +51,75 @@ public class UserController {
     public ServerResponse<String> checkValid(String str, String type) {
         return userService.checkValid(str, type);
     }
+
+    @RequestMapping(value = "get_user_info.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<User> getUserInfo(HttpSession session) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user != null) {
+            return ServerResponse.createBySuccess(user);
+        } else {
+            return ServerResponse.createByErrorMessage("用户未登陆，无法获取当前用户的信息");
+        }
+    }
+
+    @RequestMapping(value = "forget_get_question.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> forgetGetQuestion(String username) {
+        return userService.selectQuestion(username);
+    }
+
+    @RequestMapping(value = "forget_check_answer.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> forgetCheckAnswer(String username, String question, String answer) {
+        return userService.checkAnswer(username, question, answer);
+    }
+
+
+    @RequestMapping(value = "forget_reset_password.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> forgetRestPassword(String username,
+                                                     String passwordNew,
+                                                     String forgetToken) {
+        return userService.forgetResetPassword(username, passwordNew, forgetToken);
+    }
+
+    @RequestMapping(value = "reset_password.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> resetPassword(HttpSession session, String passwordOld, String passwordNew) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByErrorMessage("用户未登陆");
+        }
+        return userService.resetPassword(passwordOld, passwordNew, user);
+    }
+
+
+    @RequestMapping(value = "update_information.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<User> update_information(HttpSession session, User user) {
+        User user1 = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user1 == null) {
+            return ServerResponse.createByErrorMessage("用户未登陆");
+        }
+        user.setId(user1.getId());
+        user.setUsername(user1.getUsername());
+        ServerResponse<User> serverResponse = userService.updateInformation(user);
+        if (serverResponse.isSuccess()) {
+            session.setAttribute(Const.CURRENT_USER, serverResponse.getData());
+        }
+        return serverResponse;
+    }
+
+    @RequestMapping(value = "get_information.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<User> get_information(HttpSession session) {
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，用户需要登陆status=10");
+        }
+        return userService.getInformation(currentUser.getId());
+    }
+
+
 }
