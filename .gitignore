@@ -1,0 +1,17 @@
+# Created by .ignore support plugin (hsz.mobi)
+*.war
+*.ear
+*.orig
+targer/
+.idea/
+/idea/
+*.ipr
+*.iml
+*.iws
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+.DS_Store
+Thumbs.db
