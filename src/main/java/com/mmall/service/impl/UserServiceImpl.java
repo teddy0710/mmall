@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.mmall.common.TokenCache.TOKEN_PREFIX;
+
 
 @Service("iUserService")
 public class UserServiceImpl implements IUserService {
-    public static final String TOKEN_PREFIX = "token_";
     @Autowired
     private UserMapper userMapper;
 
@@ -177,7 +178,7 @@ public class UserServiceImpl implements IUserService {
     //**************backEnd************************
     @Override
     public ServerResponse checkAdminRole(User user) {
-        if (user != null && user.getRole().intValue() == Const.Role.ROLE_ADMIN) {
+        if (user != null && user.getRole() == Const.Role.ROLE_ADMIN) {
             return ServerResponse.createBySuccess();
         }
         return ServerResponse.createByError();
