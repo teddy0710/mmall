@@ -155,12 +155,12 @@ public class ProductManageController {
             String targetFileName = iFileService.upload(file, path);
             if (StringUtils.isBlank(targetFileName)) {
                 resultMap.put("success", false);
-                resultMap.put("msg", "上传成功");
+                resultMap.put("msg", "上传失败");
                 return resultMap;
             }
             String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFileName;
             resultMap.put("success", true);
-            resultMap.put("msg", "上传失败");
+            resultMap.put("msg", "上传成功");
             resultMap.put("file_path", url);
             response.addHeader("Access-Control-Allow-Headers", "X-File-Name");
             return resultMap;
